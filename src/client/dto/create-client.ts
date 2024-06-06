@@ -1,4 +1,4 @@
-import { IsString, IsDateString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateClientDto {
   @IsString()

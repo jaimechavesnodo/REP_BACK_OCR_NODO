@@ -5,6 +5,7 @@ import { Client } from './entities/client.entity';
 import { CreateClientDto } from './dto/create-client';
 import { UpdateClientDto } from './dto/update-client';
 import { OpportunityAssignmentDto } from './dto/opportunity-assignment';
+import { MessageClientDto } from './dto/message-client';
 
 @Controller('client')
 export class ClientController {
@@ -18,6 +19,11 @@ export class ClientController {
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Client> {
     return this.clientService.findOne(+id);
+  }
+
+  @Get('getMessageDataClient/:pageNumber/:phone')
+  getMessageDataClient(@Param('pageNumber') pageNumber: string,@Param('phone') phone: string): Promise<MessageClientDto> {
+    return this.clientLogic.getMessageDataClient(pageNumber,phone);
   }
 
   @Delete(':id')
