@@ -59,10 +59,10 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8AB07ED163F345129975866054F6177E }}
 
       - name: 'Deploy to Azure Web App'
-          id: deploy-to-webapp
-          uses: azure/webapps-deploy@v2
-          with:
-            app-name: 'backOcrNodo'
-            slot-name: 'Production'
-            package: .
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'backOcrNodo'
+          slot-name: 'Production'
+          package: .
             
