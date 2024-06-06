@@ -10,7 +10,7 @@ import { ClientModule } from './client/client.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mssql',
-      host: process.env.DB_HOST,
+      host: process.env.DB_HOST || '8080',
       port: 1433,
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
