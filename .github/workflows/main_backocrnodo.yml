@@ -58,11 +58,11 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3EF12A13A3C74F1096848B94B4283B77 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8AB07ED163F345129975866054F6177E }}
 
- - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'backOcrNodo'
-          slot-name: 'Production'
-          package: .
+      - name: 'Deploy to Azure Web App'
+              id: deploy-to-webapp
+              uses: azure/webapps-deploy@v2
+              with:
+                app-name: 'backOcrNodo'
+                slot-name: 'Production'
+                package: .
           
