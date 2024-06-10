@@ -25,6 +25,6 @@ RUN npm install --prod
 
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 6601
+EXPOSE 8080
 
 CMD ["node", "dist/main"]

@@ -24,7 +24,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('nodo/docs', app, document);
 
-  await app.listen(process.env.PORT);
+  const port = process.env.PORT || 8080;
+  await app.listen(port);
   
   const log = new Logger('nodo');
   log.log(`nodo is running on: ${await app.getUrl()}`);
