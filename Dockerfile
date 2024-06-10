@@ -20,8 +20,7 @@ FROM node:20.3.0-bullseye AS runner
 WORKDIR /usr/src/app
 
 COPY package.json package-lock.json ./
-
-RUN npm install --prod
+RUN npm install --only=production
 
 COPY --from=builder /app/dist ./dist
 
