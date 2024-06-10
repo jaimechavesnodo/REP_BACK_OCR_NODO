@@ -16,7 +16,6 @@ async function bootstrap() {
     }),
   )
 
-
   const config = new DocumentBuilder()
    .setTitle('nodo')
    .setDescription('project for a bot company integrated with watti')
@@ -26,7 +25,7 @@ async function bootstrap() {
   SwaggerModule.setup('nodo/docs', app, document);
 
   const port = process.env.PORT || '8080';
-  await app.listen(port); // Escuchar en todas las interfaces
+  await app.listen(port, '0.0.0.0'); // Escuchar en todas las interfaces
   
   const log = new Logger('nodo');
   log.log(`nodo is running on: ${await app.getUrl()}`);
