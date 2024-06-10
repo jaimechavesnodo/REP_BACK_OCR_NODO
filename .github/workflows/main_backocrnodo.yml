@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy Node.js app to Azure Web App - backOcrNodo
 
 on:
@@ -22,7 +25,7 @@ jobs:
         run: |
           npm install
           npm run build --if-present
-          npm run test --if-present -- --passWithNoTests
+          npm run test --if-present
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -40,7 +43,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write # This is required for requesting the JWT
+      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -54,9 +57,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B569D1A4151F4A67B2464B3B3887662D }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3EF12A13A3C74F1096848B94B4283B77 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8AB07ED163F345129975866054F6177E }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C88A70845E694DD5921A1D20FAD296EB }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C734955474F7464BAAC08653A1FA9C94 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_C28A19FF24934E94891F8A1DBF9E25D3 }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -65,4 +68,4 @@ jobs:
           app-name: 'backOcrNodo'
           slot-name: 'Production'
           package: .
-            
+          
