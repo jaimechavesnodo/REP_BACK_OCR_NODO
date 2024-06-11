@@ -18,10 +18,14 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install dependencies and build
-        run: |
-          npm install
-          npm run build
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Verify node_modules
+        run: ls -la node_modules
 
       - name: Zip artifact for deployment
         run: zip -r release.zip .
