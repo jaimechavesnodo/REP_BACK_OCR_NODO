@@ -85,7 +85,7 @@ jobs:
           app-name: 'backOcrNodo'
           slot-name: 'Production'
           package: .
-          startup-command: 'node node_modules/.bin/nest start'
+          startup-command: 'npm run start:prod'
 
       - name: List files in the deployed directory
         run: ls -la
