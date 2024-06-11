@@ -24,7 +24,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('nodo/docs', app, document);
 
-  const port = process.env.PORT || ':8080';
+  const port = process.env.PORT || '8080';
   await app.listen(port, '0.0.0.0'); // Escuchar en todas las interfaces
   
   const log = new Logger('nodo');
