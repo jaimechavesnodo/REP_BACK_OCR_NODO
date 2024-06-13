@@ -1,0 +1,18 @@
+import { IsString,IsNumber } from 'class-validator';
+
+export class CreateShoppingClientDto {
+  @IsNumber()
+  idClient: number;
+
+  @IsNumber()
+  price: number;
+
+  @IsString()
+  nit: string;
+
+  @IsString()
+  nameStore: string;
+
+  @IsString()
+  invoiceNumber: string;
+}

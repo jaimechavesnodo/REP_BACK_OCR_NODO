@@ -19,4 +19,16 @@ export class Client {
 
   @Column()
   balanceReserve: number;
+
+  @Column()
+  numberDocument: string;
+
+  @Column()
+  typeDocument: string;
+
+  @Column()
+  email: string;
+
+  @Column()
+  city: string;
 }

@@ -2,8 +2,10 @@ import { Controller, Get, Param, Delete, Post, Put, Body } from '@nestjs/common'
 import { ClientService } from './client.service';
 import { ClientLogic } from './client.logic';
 import { Client } from './entities/client.entity';
+import { ShoppingClient } from './entities/shoppingClient.entity';
 import { CreateClientDto } from './dto/create-client';
 import { UpdateClientDto } from './dto/update-client';
+import { CreateShoppingClientDto } from './dto/create-shopping-Client';
 import { OpportunityAssignmentDto } from './dto/opportunity-assignment';
 import { MessageClientDto } from './dto/message-client';
 
@@ -34,6 +36,11 @@ export class ClientController {
   @Post()
   create(@Body() createClientDto: CreateClientDto): Promise<Client> {
     return this.clientService.create(createClientDto);
+  }
+
+  @Post('createShoppingClient')
+  createShoppingClient(@Body() createShoppingClientDto: CreateShoppingClientDto): Promise<ShoppingClient> {
+    return this.clientService.createShoppingClient(createShoppingClientDto);
   }
 
   @Post('opportunityAssignmentClient')

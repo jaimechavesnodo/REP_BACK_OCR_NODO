@@ -21,7 +21,6 @@ export class ClientLogic {
             opportunities += Math.floor(purchaseValue / 50000);
             balanceReserve = purchaseValue % 50000;
         }
-
         // Actualiza el cliente
         const clientUpdateDto: UpdateClientDto = {
             phone: client.phone,
