@@ -11,8 +11,20 @@ export class CreateShoppingClientDto {
   nit: string;
 
   @IsString()
-  nameStore: string;
+  invoiceNumber: string;
 
   @IsString()
-  invoiceNumber: string;
+  dateInvoice: string;
+
+  @IsString()
+  typeProduct: string;
+
+  @IsString()
+  invoiceUrl: string;
+
+  @IsString()
+  readInvoice: string;
+
+  @IsString()
+  validInvoice: string;
 }

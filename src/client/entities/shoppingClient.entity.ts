@@ -15,10 +15,22 @@ export class ShoppingClient {
   nit: string;
 
   @Column()
-  nameStore: string;
+  invoiceUrl: string;
+
+  @Column()
+  typeProduct: string;
 
   @Column()
   invoiceNumber: string;
+
+  @Column()
+  dateInvoice: string;
+
+  @Column()
+  readInvoice: string;
+
+  @Column()
+  validInvoice: string;
 
   @Column()
   date: Date;
