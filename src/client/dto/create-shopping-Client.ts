@@ -24,7 +24,4 @@ export class CreateShoppingClientDto {
 
   @IsString()
   readInvoice: string;
-
-  @IsString()
-  validInvoice: string;
 }
