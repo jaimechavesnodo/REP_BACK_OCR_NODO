@@ -1,6 +1,7 @@
 import { IsString,IsNumber } from 'class-validator';
 
 export class CreateShoppingClientDto {
+  
   @IsNumber()
   idClient: number;
 
@@ -24,4 +25,5 @@ export class CreateShoppingClientDto {
 
   @IsString()
   readInvoice: string;
+
 }

@@ -30,9 +30,7 @@ export class ShoppingClient {
   readInvoice: string;
 
   @Column()
-  validInvoice: string;
-
-  @Column()
   date: Date;
 
 }
+
