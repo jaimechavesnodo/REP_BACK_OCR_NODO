@@ -16,7 +16,6 @@ async function bootstrap() {
     }),
   )
 
-  
   const config = new DocumentBuilder()
    .setTitle('nodo')
    .setDescription('project for a bot company integrated with watti')
