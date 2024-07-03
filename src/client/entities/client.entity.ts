@@ -31,4 +31,7 @@ export class Client {
 
   @Column()
   city: string;
+
+  @Column()
+  vehicle: string;
 }

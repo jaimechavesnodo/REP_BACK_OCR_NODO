@@ -15,4 +15,7 @@ export class CreateClientDto {
 
   @IsString()
   city: string;
+
+  @IsString()
+  vehicle: string;
 }
