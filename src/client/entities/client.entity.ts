@@ -35,3 +35,4 @@ export class Client {
   @Column()
   vehicle: string;
 }
+
