@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ClientService } from './client.service';
-import { OpportunityAssignmentDto } from './dto/opportunity-assignment';
-import { MessageClientDto } from './dto/message-client';
-import { UpdateClientDto } from './dto/update-client';
-import { Client } from './entities/client.entity';
+import { ClientService } from '../service/client.service';
+import { OpportunityAssignmentDto } from '../dto/opportunity-assignment';
+import { MessageClientDto } from '../dto/message-client';
+import { UpdateClientDto } from '../dto/update-client';
+import { Client } from '../entities/client.entity';
 import axios from 'axios';
 
 @Injectable()

@@ -1,13 +1,13 @@
 import { Controller, Get, Param, Delete, Post, Put, Body } from '@nestjs/common';
-import { ClientService } from './client.service';
-import { ClientLogic } from './client.logic';
-import { Client } from './entities/client.entity';
-import { ShoppingClient } from './entities/shoppingClient.entity';
-import { CreateClientDto } from './dto/create-client';
-import { UpdateClientDto } from './dto/update-client';
-import { CreateShoppingClientDto } from './dto/create-shopping-Client';
-import { OpportunityAssignmentDto } from './dto/opportunity-assignment';
-import { MessageClientDto } from './dto/message-client';
+import { ClientService } from '../service/client.service';
+import { ClientLogic } from '../logic/client.logic';
+import { Client } from '../entities/client.entity';
+import { ShoppingClient } from '../entities/shoppingClient.entity';
+import { CreateClientDto } from '../dto/create-client';
+import { UpdateClientDto } from '../dto/update-client';
+import { CreateShoppingClientDto } from '../dto/create-shopping-Client';
+import { OpportunityAssignmentDto } from '../dto/opportunity-assignment';
+import { MessageClientDto } from '../dto/message-client';
 
 @Controller('client')
 export class ClientController {
@@ -27,6 +27,11 @@ export class ClientController {
   getMessageDataClient(@Param('pageNumber') pageNumber: string,@Param('phone') phone: string): Promise<MessageClientDto> {
     return this.clientLogic.getMessageDataClient(pageNumber,phone);
   }
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string): Promise<ShoppingClient> {
+  //   return this.clientService.findShoppingClientsByParam(+id);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
