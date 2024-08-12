@@ -30,6 +30,9 @@ export class ShoppingClient {
   date: Date;
 
   @Column()
-  readInvoice: number;
+  invoiceRead: number;
+
+  @Column()
+  idAgent: number;
 }
 

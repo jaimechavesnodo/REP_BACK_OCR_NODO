@@ -28,10 +28,10 @@ export class ClientController {
     return this.clientLogic.getMessageDataClient(pageNumber,phone);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string): Promise<ShoppingClient> {
-  //   return this.clientService.findShoppingClientsByParam(+id);
-  // }
+  @Get('handleAgentShoppingClient/:idAgent')
+  handleAgentShoppingClient(@Param('idAgent') idAgent: string): Promise<ShoppingClient> {
+    return this.clientLogic.handleAgentShoppingClient(+idAgent);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {

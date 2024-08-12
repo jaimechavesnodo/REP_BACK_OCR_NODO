@@ -3,6 +3,7 @@ import { ClientService } from '../service/client.service';
 import { OpportunityAssignmentDto } from '../dto/opportunity-assignment';
 import { MessageClientDto } from '../dto/message-client';
 import { UpdateClientDto } from '../dto/update-client';
+import { ShoppingClient } from '../entities/shoppingClient.entity';
 import { Client } from '../entities/client.entity';
 import axios from 'axios';
 
@@ -30,6 +31,20 @@ export class ClientLogic {
         };
 
         return await this.clientService.update(opportunityAssignmentDto.idClient, clientUpdateDto);
+    }
+
+    async handleAgentShoppingClient(idAgent: number): Promise<ShoppingClient | null> {
+
+        console.log('okk', idAgent)
+        // Buscar un registro en la tabla shoppingClient por idAgent y readInvoice = 2
+        let shoppingClient = await this.clientService.findShoppingClientByAgentAndReadInvoice(idAgent);
+
+        // Si no existe un registro, asignar uno disponible con readInvoice = 2
+        if (!shoppingClient) {
+            shoppingClient = await this.clientService.assignShoppingClientToAgent(idAgent);
+        }
+        // Retornar el registro encontrado o asignado
+        return shoppingClient;
     }
 
     async getMessageDataClient(pageNumber : string, phone : string): Promise<MessageClientDto> {

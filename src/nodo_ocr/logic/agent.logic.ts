@@ -14,7 +14,6 @@ export class AgentLogic {
   ) { }
 
   async createUser(userCreateDto: AgentCreateDto): Promise<Agent> {
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(userCreateDto.agentPassword, salt);
 
@@ -33,7 +32,7 @@ export class AgentLogic {
     }
     const payload = { username: agent.agentEmail, sub: agent.id };
     return {
-      access_token: this.jwtService.sign(payload),  // No expiresIn property here
+      data: { access_token: this.jwtService.sign(payload),emial: agent.agentEmail,id : agent.id }  
     };
   }
 

@@ -11,5 +11,8 @@ export class Agent {
 
   @Column()
   agentPassword: string;
+
+  @Column()
+  name: string;
 }
 

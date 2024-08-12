@@ -23,7 +23,7 @@ export class CreateShoppingClientDto {
   @IsString()
   invoiceUrl: string;
 
-  @IsString()
-  readInvoice: number;
+  @IsNumber()
+  invoiceRead: number;
 
 }

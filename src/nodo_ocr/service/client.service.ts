@@ -38,7 +38,7 @@ export class ClientService {
     const newUser = this.clientShoppingRepository.create(createShoppingClientDto);
     return this.clientShoppingRepository.save(createShoppingClientDto);
   }
-  
+
    async findShoppingClientsByParam(paramName: string, paramValue: any): Promise<ShoppingClient[]> {
     return this.clientShoppingRepository.find({
       where: { [paramName]: paramValue }
@@ -49,4 +49,26 @@ export class ClientService {
     await this.clientRepository.update(id, updateClientDto);
     return this.findOne(id); 
   }
+
+  async findShoppingClientByAgentAndReadInvoice(idAgent: number): Promise<ShoppingClient | null> {
+    return this.clientShoppingRepository.findOne({
+      where: { idAgent, invoiceRead: 2 },
+    });
+  }
+
+  async assignShoppingClientToAgent(idAgent: number): Promise<ShoppingClient | null> {
+    const unassignedShoppingClient = await this.clientShoppingRepository.findOne({
+      where: { idAgent: null, invoiceRead: 2 },
+      order: { id: 'DESC' }
+    });
+
+    if (unassignedShoppingClient) {
+      unassignedShoppingClient.idAgent = idAgent;
+      return this.clientShoppingRepository.save(unassignedShoppingClient);
+    }
+
+    return null;
+  }
 }
+
+
