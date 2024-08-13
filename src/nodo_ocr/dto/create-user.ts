@@ -1,4 +1,4 @@
-import { IsString,IsNotEmpty } from 'class-validator';
+import { IsString,IsNotEmpty,IsNumber } from 'class-validator';
 
 export class AgentCreateDto {
   @IsString()
@@ -12,4 +12,8 @@ export class AgentCreateDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  typeUser: number;
 }

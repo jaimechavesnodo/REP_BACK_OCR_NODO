@@ -14,5 +14,8 @@ export class Agent {
 
   @Column()
   name: string;
+  
+  @Column()
+  typeUser: number;
 }
 

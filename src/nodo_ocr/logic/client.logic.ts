@@ -35,7 +35,6 @@ export class ClientLogic {
 
     async handleAgentShoppingClient(idAgent: number): Promise<ShoppingClient | null> {
 
-        console.log('okk', idAgent)
         // Buscar un registro en la tabla shoppingClient por idAgent y readInvoice = 2
         let shoppingClient = await this.clientService.findShoppingClientByAgentAndReadInvoice(idAgent);
 
