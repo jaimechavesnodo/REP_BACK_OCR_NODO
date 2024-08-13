@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Client } from '../entities/client.entity';
 import { ShoppingClient } from '../entities/shoppingClient.entity';
 import { CreateClientDto } from '../dto/create-client';
+import { UpdatetaeShoppingClientDto } from '../dto/update-shoppingClient';
 import { CreateShoppingClientDto } from '../dto/create-shopping-Client';
 import { UpdateClientDto } from '../dto/update-client';
 
@@ -24,6 +25,10 @@ export class ClientService {
   findOne(id: number): Promise<Client> {
     return this.clientRepository.findOneBy({ id });
   }
+
+  findOneShoppingClient(id: number): Promise<ShoppingClient> {
+    return this.clientShoppingRepository.findOneBy({ id });
+  } 
 
   async remove(id: number): Promise<void> {
     await this.clientRepository.delete(id);
@@ -49,6 +54,13 @@ export class ClientService {
     await this.clientRepository.update(id, updateClientDto);
     return this.findOne(id); 
   }
+
+
+  async updateShoppingClient(id: number, updateClientDto: UpdatetaeShoppingClientDto): Promise<ShoppingClient> {
+    await this.clientShoppingRepository.update(id, updateClientDto);
+    return this.findOneShoppingClient(id); 
+  }
+
 
   async findShoppingClientByAgentAndReadInvoice(idAgent: number): Promise<ShoppingClient | null> {
     return this.clientShoppingRepository.findOne({

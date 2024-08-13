@@ -34,5 +34,8 @@ export class ShoppingClient {
 
   @Column()
   idAgent: number;
+
+  @Column()
+  statusInvoice: number;
 }
 

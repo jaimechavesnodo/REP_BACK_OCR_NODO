@@ -5,6 +5,7 @@ import { Client } from '../entities/client.entity';
 import { ShoppingClient } from '../entities/shoppingClient.entity';
 import { CreateClientDto } from '../dto/create-client';
 import { UpdateClientDto } from '../dto/update-client';
+import { UpdatetaeShoppingClientDto } from '../dto/update-shoppingClient';
 import { CreateShoppingClientDto } from '../dto/create-shopping-Client';
 import { OpportunityAssignmentDto } from '../dto/opportunity-assignment';
 import { MessageClientDto } from '../dto/message-client';
@@ -51,6 +52,14 @@ export class ClientController {
   @Post('opportunityAssignmentClient')
   opportunityAssignmentClient(@Body() opportunityAssignmentDto: OpportunityAssignmentDto): Promise<Client> {
     return this.clientLogic.opportunityAssignmentClient(opportunityAssignmentDto);
+  }
+
+  @Put('shoppingClient/:id')
+  updateShoppingClient(
+    @Param('id') id: number,
+    @Body() updateClientDto: UpdatetaeShoppingClientDto,
+  ): Promise<ShoppingClient> {
+    return this.clientService.updateShoppingClient(+id, updateClientDto);
   }
 
   @Put(':id')

@@ -6,6 +6,8 @@ import { ocrModule } from './nodo_ocr/ocr_module';
 import { Agent } from './nodo_ocr/entities/agent.entity';
 import { Client } from './nodo_ocr/entities/client.entity';
 import { ShoppingClient } from './nodo_ocr/entities/shoppingClient.entity';
+import { Store } from './nodo_ocr/entities/store.entity';
+
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { ShoppingClient } from './nodo_ocr/entities/shoppingClient.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Agent,Client,ShoppingClient],
+      entities: [Agent,Client,ShoppingClient,Store],
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       synchronize: false,
     }),
