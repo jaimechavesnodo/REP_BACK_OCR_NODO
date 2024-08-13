@@ -32,7 +32,7 @@ export class AgentLogic {
     }
     const payload = { username: agent.agentEmail, sub: agent.id };
     return {
-      data: { access_token: this.jwtService.sign(payload),emial: agent.agentEmail,id : agent.id, typeUser : agent.typeUser, name: agent.name }  
+      data: { access_token: this.jwtService.sign(payload),email: agent.agentEmail,id : agent.id, typeUser : agent.typeUser, name: agent.name }  
     };
   }
 
