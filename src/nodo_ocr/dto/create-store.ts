@@ -8,4 +8,7 @@ export class CreateStoreDto {
   @IsString()
   nit: string;
 
+  @IsString()
+  city: string;
+
 }

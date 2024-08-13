@@ -10,6 +10,9 @@ export class Store {
 
   @Column()
   nit: string;
+  
+  @Column()
+  city: string;
 }
 
 

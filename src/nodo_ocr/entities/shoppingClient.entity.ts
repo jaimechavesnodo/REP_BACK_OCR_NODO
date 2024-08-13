@@ -37,5 +37,8 @@ export class ShoppingClient {
 
   @Column()
   statusInvoice: number;
+
+  @Column()
+  commerce: string;
 }
 

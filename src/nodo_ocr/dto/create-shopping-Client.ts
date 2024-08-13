@@ -26,4 +26,6 @@ export class CreateShoppingClientDto {
   @IsNumber()
   invoiceRead: number;
 
+  @IsString()
+  commerce: string;
 }

@@ -7,7 +7,9 @@ import { Agent } from './nodo_ocr/entities/agent.entity';
 import { Client } from './nodo_ocr/entities/client.entity';
 import { ShoppingClient } from './nodo_ocr/entities/shoppingClient.entity';
 import { Store } from './nodo_ocr/entities/store.entity';
-
+import { join } from 'path';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -22,6 +24,25 @@ import { Store } from './nodo_ocr/entities/store.entity';
       entities: [Agent,Client,ShoppingClient,Store],
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       synchronize: false,
+    }),
+    MailerModule.forRoot({
+      transport: {
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD, 
+        },
+      },
+      defaults: {
+        from: `"No Reply" <${process.env.EMAIL_USER}>`,
+      },
+      template: {
+        dir: join(__dirname, 'templates'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
     }),
     CommonModule,
     ocrModule,
