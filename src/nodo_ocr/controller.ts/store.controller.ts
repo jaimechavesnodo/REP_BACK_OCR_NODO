@@ -22,5 +22,10 @@ export class StoreController {
     return this.storeService.findAll();
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string): Promise<Store> {
+    return this.storeService.findOne(+id);
+  }
+
 }
 
