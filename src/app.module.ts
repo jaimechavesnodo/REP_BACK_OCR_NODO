@@ -7,9 +7,7 @@ import { Agent } from './nodo_ocr/entities/agent.entity';
 import { Client } from './nodo_ocr/entities/client.entity';
 import { ShoppingClient } from './nodo_ocr/entities/shoppingClient.entity';
 import { Store } from './nodo_ocr/entities/store.entity';
-import { join } from 'path';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -21,7 +19,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Agent,Client,ShoppingClient,Store],
+      entities: [Agent, Client, ShoppingClient, Store],
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       synchronize: false,
     }),
@@ -30,18 +28,11 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         service: 'gmail',
         auth: {
           user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD, 
+          pass: process.env.EMAIL_PASSWORD,
         },
       },
       defaults: {
         from: `"No Reply" <${process.env.EMAIL_USER}>`,
-      },
-      template: {
-        dir: join(__dirname, 'templates'),
-        adapter: new HandlebarsAdapter(),
-        options: {
-          strict: true,
-        },
       },
     }),
     CommonModule,
@@ -51,4 +42,3 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
   providers: [],
 })
 export class AppModule {}
-

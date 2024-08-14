@@ -17,5 +17,11 @@ export class UserController {
   async login(@Body() agentLoginDto: AgentLoginDto) {
     return this.agentLogic.login(agentLoginDto);
   }
+
+  @Post('resetPassword')
+  async resetPassword(@Body('email') agentEmail: string): Promise<{ message: string }> {
+    await this.agentLogic.resetPassword(agentEmail);
+    return { message: 'Se ha enviado un correo electrónico con la nueva contraseña.' };
+  }
 }
 

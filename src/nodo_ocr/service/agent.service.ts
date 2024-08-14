@@ -31,4 +31,9 @@ export class AgentService {
     return this.agentRepository.findOneBy({agentEmail});
   }
 
+  async update(id: number, updateData: Partial<Agent>): Promise<Agent> {
+    await this.agentRepository.update(id, updateData);
+    return this.agentRepository.findOneBy({ id });
+  }
+
 }
