@@ -40,5 +40,8 @@ export class ShoppingClient {
 
   @Column()
   commerce: string;
+
+  @Column()
+  reasonReject: string;
 }
 

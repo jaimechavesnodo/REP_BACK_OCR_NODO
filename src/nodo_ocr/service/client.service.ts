@@ -69,7 +69,6 @@ export class ClientService {
   }
 
   async findShoppingClientsByDateRange(startDate: Date, endDate: Date, limit: number): Promise<ShoppingClient[]> {
-    console.log('ok')
     return this.clientShoppingRepository.createQueryBuilder('shoppingClient')
       .where('shoppingClient.date >= :startDate', { startDate })
       .andWhere('shoppingClient.date <= :endDate', { endDate })

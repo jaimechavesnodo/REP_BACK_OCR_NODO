@@ -47,6 +47,11 @@ export class UpdatetaeShoppingClientDto {
   statusInvoice: number;
 
   @IsString()
+  @IsOptional()
   commerce: string;
+  
+  @IsString()
+  @IsOptional()
+  reasonReject: string;
 }
 
