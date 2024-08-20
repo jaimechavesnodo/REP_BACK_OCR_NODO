@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Delete, Post, Put, Body } from '@nestjs/common';
+import { Controller, Get, Param, Delete, Post, Put, Body, Query } from '@nestjs/common';
 import { ClientService } from '../service/client.service';
 import { ClientLogic } from '../logic/client.logic';
 import { Client } from '../entities/client.entity';
@@ -34,6 +34,18 @@ export class ClientController {
     return this.clientLogic.handleAgentShoppingClient(+idAgent);
   }
 
+  
+  @Get('shoppingClientsByDateRange/:startDate/:endDate/:limit')
+  getShoppingClientsByDateRange(
+    @Param('startDate') startDate: string,
+    @Param('endDate') endDate: string,
+    @Param('limit') limit: number
+  ): Promise<ShoppingClient[]> {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    return this.clientService.findShoppingClientsByDateRange(start, end, limit);
+  }
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
     return this.clientService.remove(+id);
@@ -61,6 +73,7 @@ export class ClientController {
   ): Promise<ShoppingClient> {
     return this.clientService.updateShoppingClient(+id, updateClientDto);
   }
+
 
   @Put(':id')
   update(

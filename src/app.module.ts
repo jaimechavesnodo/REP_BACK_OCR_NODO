@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from './common/common.module';
@@ -8,6 +8,7 @@ import { Client } from './nodo_ocr/entities/client.entity';
 import { ShoppingClient } from './nodo_ocr/entities/shoppingClient.entity';
 import { Store } from './nodo_ocr/entities/store.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { CorsMiddleware } from '@nest-middlewares/cors';
 
 @Module({
   imports: [
@@ -41,4 +42,10 @@ import { MailerModule } from '@nestjs-modules/mailer';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CorsMiddleware)
+      .forRoutes('*');
+  }
+}
