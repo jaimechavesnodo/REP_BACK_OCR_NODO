@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, LessThanOrEqual, MoreThan, Not, QueryBuilder, Repository } from 'typeorm';
 import { Client } from '../entities/client.entity';
 import { ShoppingClient } from '../entities/shoppingClient.entity';
 import { CreateClientDto } from '../dto/create-client';
@@ -16,7 +16,7 @@ export class ClientService {
     private clientRepository: Repository<Client>,
     @InjectRepository(ShoppingClient)
     private clientShoppingRepository: Repository<ShoppingClient>,
-  ) {}
+  ) { }
 
   findAll(): Promise<Client[]> {
     return this.clientRepository.find();
@@ -28,7 +28,7 @@ export class ClientService {
 
   findOneShoppingClient(id: number): Promise<ShoppingClient> {
     return this.clientShoppingRepository.findOneBy({ id });
-  } 
+  }
 
   async remove(id: number): Promise<void> {
     await this.clientRepository.delete(id);
@@ -44,7 +44,7 @@ export class ClientService {
     return this.clientShoppingRepository.save(createShoppingClientDto);
   }
 
-   async findShoppingClientsByParam(paramName: string, paramValue: any): Promise<ShoppingClient[]> {
+  async findShoppingClientsByParam(paramName: string, paramValue: any): Promise<ShoppingClient[]> {
     return this.clientShoppingRepository.find({
       where: { [paramName]: paramValue }
     });
@@ -52,13 +52,24 @@ export class ClientService {
 
   async update(id: number, updateClientDto: UpdateClientDto): Promise<Client> {
     await this.clientRepository.update(id, updateClientDto);
-    return this.findOne(id); 
+    return this.findOne(id);
   }
 
 
   async updateShoppingClient(id: number, updateClientDto: UpdatetaeShoppingClientDto): Promise<ShoppingClient> {
+    const queue = await this.getQueue();
+    updateClientDto.queue = queue;
     await this.clientShoppingRepository.update(id, updateClientDto);
-    return this.findOneShoppingClient(id); 
+    return this.findOneShoppingClient(id);
+  }
+
+  async getQueue(): Promise<any> {
+    const result = await this.clientShoppingRepository.createQueryBuilder('shoppingClient')
+      .select('MAX(shoppingClient.queue)', 'maxQueue')
+      .getRawOne();
+
+    const nextQueue = (result.maxQueue || 0) + 1;
+    return nextQueue;
   }
 
 
@@ -78,12 +89,15 @@ export class ClientService {
 
   async assignShoppingClientToAgent(idAgent: number): Promise<ShoppingClient | null> {
     const unassignedShoppingClient = await this.clientShoppingRepository.findOne({
-      where: { idAgent: null, invoiceRead: 2 },
-      order: { date: 'DESC' }
+      where: { idAgent: null, invoiceRead: 2, queue: MoreThan(0) },
+      order: { queue: 'ASC' }
     });
+
+    console.log(unassignedShoppingClient);
 
     if (unassignedShoppingClient) {
       unassignedShoppingClient.idAgent = idAgent;
+      unassignedShoppingClient.queue = 0;
       return this.clientShoppingRepository.save(unassignedShoppingClient);
     }
 

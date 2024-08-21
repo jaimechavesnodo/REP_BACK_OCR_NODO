@@ -43,6 +43,9 @@ export class ShoppingClient {
 
   @Column()
   reasonReject: string;
+
+  @Column()
+  queue: number;
 }
 
 

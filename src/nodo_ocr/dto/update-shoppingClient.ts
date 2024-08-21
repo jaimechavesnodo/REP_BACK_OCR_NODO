@@ -53,5 +53,9 @@ export class UpdatetaeShoppingClientDto {
   @IsString()
   @IsOptional()
   reasonReject: string;
+
+  @IsString()
+  @IsOptional()
+  queue: number;
 }
 
