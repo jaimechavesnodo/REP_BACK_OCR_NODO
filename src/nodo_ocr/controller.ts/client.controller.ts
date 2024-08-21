@@ -25,8 +25,8 @@ export class ClientController {
   }
 
   @Get('getMessageDataClient/:pageNumber/:phone')
-  getMessageDataClient(@Param('pageNumber') pageNumber: string,@Param('phone') phone: string): Promise<MessageClientDto> {
-    return this.clientLogic.getMessageDataClient(pageNumber,phone);
+  getMessageDataClient(@Param('pageNumber') pageNumber: string, @Param('phone') phone: string): Promise<MessageClientDto> {
+    return this.clientLogic.getMessageDataClient(pageNumber, phone);
   }
 
   @Get('handleAgentShoppingClient/:idAgent')
@@ -34,17 +34,21 @@ export class ClientController {
     return this.clientLogic.handleAgentShoppingClient(+idAgent);
   }
 
-  
+
   @Get('shoppingClientsByDateRange/:startDate/:endDate/:limit')
-  getShoppingClientsByDateRange(
+  async getShoppingClientsByDateRange(
     @Param('startDate') startDate: string,
     @Param('endDate') endDate: string,
     @Param('limit') limit: number
-  ): Promise<ShoppingClient[]> {
+  ): Promise<{ data: ShoppingClient[]; totalCount: number }> {
     const start = new Date(startDate);
     const end = new Date(endDate);
-  
-    return this.clientService.findShoppingClientsByDateRange(start, end, limit);
+
+    const data = await this.clientService.findShoppingClientsByDateRange(start, end, limit);
+
+    const totalCount = data.length;
+
+    return { data, totalCount };
   }
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {

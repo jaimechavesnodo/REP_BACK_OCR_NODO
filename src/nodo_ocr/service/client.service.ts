@@ -79,7 +79,7 @@ export class ClientService {
   async assignShoppingClientToAgent(idAgent: number): Promise<ShoppingClient | null> {
     const unassignedShoppingClient = await this.clientShoppingRepository.findOne({
       where: { idAgent: null, invoiceRead: 2 },
-      order: { id: 'DESC' }
+      order: { date: 'DESC' }
     });
 
     if (unassignedShoppingClient) {
