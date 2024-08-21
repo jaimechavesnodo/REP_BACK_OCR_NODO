@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsDate } from 'class-validator';
 
 export class UpdatetaeShoppingClientDto {
 
@@ -31,7 +31,7 @@ export class UpdatetaeShoppingClientDto {
   dateInvoice: string;
 
   @IsOptional()
-  @IsString()
+  @IsDate()
   date: Date;
 
   @IsOptional()
