@@ -34,6 +34,11 @@ export class ClientController {
     return this.clientLogic.handleAgentShoppingClient(+idAgent);
   }
 
+  @Get('shoppingClients/invoiceRead/count')
+  async countShoppingClientsByInvoiceRead(): Promise<{ count: number }> {
+    const count = await this.clientService.countShoppingClientsByInvoiceRead();
+    return { count };
+  }
 
   @Get('shoppingClientsByDateRange/:startDate/:endDate/:limit')
   async getShoppingClientsByDateRange(

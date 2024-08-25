@@ -88,6 +88,12 @@ export class ClientService {
       .getMany();
   }
 
+  async countShoppingClientsByInvoiceRead(): Promise<number> {
+    return this.clientShoppingRepository.count({
+      where: { invoiceRead: 2 }
+    });
+  }
+
   async assignShoppingClientToAgent(idAgent: number): Promise<ShoppingClient | null> {
     const unassignedShoppingClient = await this.clientShoppingRepository.findOne({
       where: { idAgent: null, invoiceRead: 2 },
