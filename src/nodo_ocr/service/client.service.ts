@@ -7,7 +7,7 @@ import { CreateClientDto } from '../dto/create-client';
 import { UpdatetaeShoppingClientDto } from '../dto/update-shoppingClient';
 import { CreateShoppingClientDto } from '../dto/create-shopping-Client';
 import { UpdateClientDto } from '../dto/update-client';
-
+import * as ExcelJS from 'exceljs';
 
 
 @Injectable()
@@ -86,6 +86,42 @@ export class ClientService {
       .andWhere('shoppingClient.date <= :endDate', { endDate })
       .take(limit)
       .getMany();
+  }
+
+  async generateExcelForShoppingClientsByDateRange(startDate: Date, endDate: Date, limit: number): Promise<Buffer> {
+    const shoppingClients = await this.findShoppingClientsByDateRange(startDate, endDate, limit);
+
+    // Crear un nuevo libro de Excel
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('ShoppingClients');
+
+    // Definir las columnas
+    worksheet.columns = [
+      { header: 'ID', key: 'id', width: 10 },
+      { header: 'ID Cliente', key: 'idClient', width: 10 },
+      { header: 'Precio', key: 'price', width: 15 },
+      { header: 'NIT', key: 'nit', width: 15 },
+      { header: 'URL Factura', key: 'invoiceUrl', width: 30 },
+      { header: 'Tipo Producto', key: 'typeProduct', width: 20 },
+      { header: 'Número Factura', key: 'invoiceNumber', width: 20 },
+      { header: 'Fecha Factura', key: 'dateInvoice', width: 20 },
+      { header: 'Fecha', key: 'date', width: 20 },
+      { header: 'Factura Leída', key: 'invoiceRead', width: 15 },
+      { header: 'ID Agente', key: 'idAgent', width: 10 },
+      { header: 'Estado Factura', key: 'statusInvoice', width: 15 },
+      { header: 'Comercio', key: 'commerce', width: 20 },
+      { header: 'Razón Rechazo', key: 'reasonReject', width: 20 },
+      { header: 'Cola', key: 'queue', width: 10 },
+    ];
+
+    // Añadir filas
+    shoppingClients.forEach(client => {
+      worksheet.addRow(client);
+    });
+
+    // Generar el archivo Excel como un buffer
+    const buffer: Buffer = await workbook.xlsx.writeBuffer() as Buffer;
+    return buffer;
   }
 
   async countShoppingClientsByInvoiceRead(): Promise<number> {

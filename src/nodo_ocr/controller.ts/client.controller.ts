@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Delete, Post, Put, Body, Query } from '@nestjs/common';
+import { Controller, Get, Param, Delete, Post, Put, Body,Res } from '@nestjs/common';
 import { ClientService } from '../service/client.service';
 import { ClientLogic } from '../logic/client.logic';
 import { Client } from '../entities/client.entity';
@@ -9,6 +9,7 @@ import { UpdatetaeShoppingClientDto } from '../dto/update-shoppingClient';
 import { CreateShoppingClientDto } from '../dto/create-shopping-Client';
 import { OpportunityAssignmentDto } from '../dto/opportunity-assignment';
 import { MessageClientDto } from '../dto/message-client';
+import { Response } from 'express'; 
 
 @Controller('client')
 export class ClientController {
@@ -54,6 +55,26 @@ export class ClientController {
     const totalCount = data.length;
 
     return { data, totalCount };
+  }
+
+  @Get('downloadShoppingClientsByDateRange/:startDate/:endDate/:limit')
+  async downloadShoppingClientsByDateRange(
+    @Param('startDate') startDate: string,
+    @Param('endDate') endDate: string,
+    @Param('limit') limit: number,
+    @Res() res: Response  // Usa el Response de express
+  ): Promise<void> {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    const buffer = await this.clientService.generateExcelForShoppingClientsByDateRange(start, end, +limit);
+  
+    // Establecer encabezados para la descarga
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=shopping_clients_${startDate}_to_${endDate}.xlsx`);
+  
+    // Enviar el archivo Excel
+    res.send(buffer);
   }
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
