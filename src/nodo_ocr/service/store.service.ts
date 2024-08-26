@@ -27,5 +27,10 @@ export class StoreService {
     return this.storeRepository.save(newUser);
   }
 
+  async checkNitExists(nit: string): Promise<number> {
+    const store = await this.storeRepository.findOne({ where: { nit } });
+    return store ? 1 : 2;
+  }
+
 
 }

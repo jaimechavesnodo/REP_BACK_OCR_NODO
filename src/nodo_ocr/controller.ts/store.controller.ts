@@ -27,5 +27,11 @@ export class StoreController {
     return this.storeService.findOne(+id);
   }
 
+  @Get('check-nit/:nit')
+  async checkNit(@Param('nit') nit: string): Promise<{ code: number }> {
+    const code = await this.storeService.checkNitExists(nit);
+    return { code };
+  }
+
 }
 

@@ -13,6 +13,12 @@ export class Store {
   
   @Column()
   city: string;
+
+  @Column()
+  nameEDS: string;
+
+  @Column()
+  department: string;
 }
 
 
