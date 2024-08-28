@@ -27,10 +27,19 @@ export class StoreService {
     return this.storeRepository.save(newUser);
   }
 
+  // Método para validar el NIT
   async checkNitExists(nit: string): Promise<number> {
-    const store = await this.storeRepository.findOne({ where: { nit } });
+    // Eliminar puntos, guion y dígito de verificación
+    let cleanNit = nit.replace(/\./g, '').replace(/-\d$/, '');
+
+    // Si el NIT tiene más de 9 dígitos, recortarlo a los primeros 9
+    if (cleanNit.length > 9) {
+      cleanNit = cleanNit.substring(0, 9);
+    }
+    
+    // Buscar el NIT en la base de datos
+    const store = await this.storeRepository.findOne({ where: { nit: cleanNit } });
     return store ? 1 : 2;
   }
-
 
 }
