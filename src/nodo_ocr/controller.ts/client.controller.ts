@@ -96,6 +96,12 @@ export class ClientController {
     return this.clientLogic.opportunityAssignmentClient(opportunityAssignmentDto);
   }
 
+  @Put('pointsUpdate')
+  pointsUpdate(@Body() opportunityAssignmentDto: OpportunityAssignmentDto): Promise<Client> {
+    return this.clientLogic.pointsUpdate(opportunityAssignmentDto);
+  }
+
+  
   @Put('shoppingClient/:id')
   updateShoppingClient(
     @Param('id') id: number,

@@ -33,6 +33,34 @@ export class ClientLogic {
         return await this.clientService.update(opportunityAssignmentDto.idClient, clientUpdateDto);
     }
 
+    async pointsUpdate(opportunityAssignmentDto: OpportunityAssignmentDto): Promise<Client> {
+        const clientOpportunity = await this.opportunityAssignmentClient(opportunityAssignmentDto);
+
+        let mensaje = `😀 Hola, el valor de tus compras hasta ahora es de ${clientOpportunity.totalPurchased}, tus oportunidades para participar son ${clientOpportunity.opportunities} y tu reserva para la próxima oportunidad es de ${clientOpportunity.balanceReserve} 🙌`;
+
+        // Enviar el mensaje utilizando el servicio de WATI
+        await this.sendMessage(clientOpportunity.phone, mensaje);
+
+        return clientOpportunity;
+    }
+
+    private async sendMessage(phone: string, message: string): Promise<void> {
+        const url = `https://live-mt-server.wati.io/330248/api/v1/sendSessionMessage/${phone}?messageText=${encodeURIComponent(message)}`;
+        const options = {
+            method: 'POST',
+            headers: {
+                Authorization: process.env.TOKEN_WATI
+            }
+        };
+
+        try {
+            const response = await axios.post(url, null, options);
+            console.log('Mensaje enviado con éxito:', response.data);
+        } catch (error) {
+            console.error('Error al enviar el mensaje:', error);
+        }
+    }
+
     async handleAgentShoppingClient(idAgent: number): Promise<ShoppingClient | null> {
 
         // Buscar un registro en la tabla shoppingClient por idAgent y readInvoice = 2
