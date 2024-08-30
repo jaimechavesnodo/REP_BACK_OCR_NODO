@@ -5,6 +5,8 @@ import { MessageClientDto } from '../dto/message-client';
 import { UpdateClientDto } from '../dto/update-client';
 import { ShoppingClient } from '../entities/shoppingClient.entity';
 import { Client } from '../entities/client.entity';
+import { RejectionInvoiceDto } from '../dto/invoice-rejection';
+
 import axios from 'axios';
 
 @Injectable()
@@ -36,12 +38,23 @@ export class ClientLogic {
     async pointsUpdate(opportunityAssignmentDto: OpportunityAssignmentDto): Promise<Client> {
         const clientOpportunity = await this.opportunityAssignmentClient(opportunityAssignmentDto);
 
-        let mensaje = `😀 Hola, el valor de tus compras hasta ahora es de ${clientOpportunity.totalPurchased}, tus oportunidades para participar son ${clientOpportunity.opportunities} y tu reserva para la próxima oportunidad es de ${clientOpportunity.balanceReserve} 🙌`;
+        let mensaje = `😀 Tu factura se validó correctamente! Tienes ${clientOpportunity.totalPurchased}, oportunidades para participar y un acumulado de compras por ${clientOpportunity.opportunities} Tu reserva para la próxima oportunidad es de ${clientOpportunity.balanceReserve} 🙌`;
 
         // Enviar el mensaje utilizando el servicio de WATI
         await this.sendMessage(clientOpportunity.phone, mensaje);
 
         return clientOpportunity;
+    }
+
+    async rejectionInvoice (opportunityAssignment: RejectionInvoiceDto): Promise<Client> {
+
+        const client = await this.clientService.findOne(opportunityAssignment.idClient);
+
+        let mensaje = `❌ Lamentamos informarte que tu factura fue rechazada por el siguiente motivo: ${opportunityAssignment.rejectionMessage}. 😔 Por favor, revisa los detalles y vuelve a intentarlo. ¡Quedan muchos premios! 😊`;
+
+        await this.sendMessage(client.phone,mensaje);
+
+        return client;
     }
 
     private async sendMessage(phone: string, message: string): Promise<void> {
@@ -60,6 +73,8 @@ export class ClientLogic {
             console.error('Error al enviar el mensaje:', error);
         }
     }
+
+
 
     async handleAgentShoppingClient(idAgent: number): Promise<ShoppingClient | null> {
 

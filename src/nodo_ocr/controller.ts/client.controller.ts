@@ -7,9 +7,11 @@ import { CreateClientDto } from '../dto/create-client';
 import { UpdateClientDto } from '../dto/update-client';
 import { UpdatetaeShoppingClientDto } from '../dto/update-shoppingClient';
 import { CreateShoppingClientDto } from '../dto/create-shopping-Client';
+import { RejectionInvoiceDto } from '../dto/invoice-rejection';
 import { OpportunityAssignmentDto } from '../dto/opportunity-assignment';
 import { MessageClientDto } from '../dto/message-client';
 import { Response } from 'express'; 
+import { get } from 'http';
 
 @Controller('client')
 export class ClientController {
@@ -57,6 +59,8 @@ export class ClientController {
     return { data, totalCount };
   }
 
+
+
   @Get('downloadShoppingClientsByDateRange/:startDate/:endDate/:limit')
   async downloadShoppingClientsByDateRange(
     @Param('startDate') startDate: string,
@@ -86,6 +90,11 @@ export class ClientController {
     return this.clientService.create(createClientDto);
   }
 
+  @Post('rejectionInvoice')
+  rejectionInvoice(@Body() rejectionInvoiceDto: RejectionInvoiceDto): Promise<Client> {
+    return this.clientLogic.rejectionInvoice(rejectionInvoiceDto);
+  }
+
   @Post('createShoppingClient')
   createShoppingClient(@Body() createShoppingClientDto: CreateShoppingClientDto): Promise<ShoppingClient> {
     return this.clientService.createShoppingClient(createShoppingClientDto);
@@ -100,7 +109,6 @@ export class ClientController {
   pointsUpdate(@Body() opportunityAssignmentDto: OpportunityAssignmentDto): Promise<Client> {
     return this.clientLogic.pointsUpdate(opportunityAssignmentDto);
   }
-
   
   @Put('shoppingClient/:id')
   updateShoppingClient(
@@ -109,7 +117,6 @@ export class ClientController {
   ): Promise<ShoppingClient> {
     return this.clientService.updateShoppingClient(+id, updateClientDto);
   }
-
 
   @Put(':id')
   update(
