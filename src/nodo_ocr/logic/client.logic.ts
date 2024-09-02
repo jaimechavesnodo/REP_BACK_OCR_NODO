@@ -38,7 +38,7 @@ export class ClientLogic {
     async pointsUpdate(opportunityAssignmentDto: OpportunityAssignmentDto): Promise<Client> {
         const clientOpportunity = await this.opportunityAssignmentClient(opportunityAssignmentDto);
 
-        let mensaje = `😀 Tu factura se validó correctamente! Tienes ${clientOpportunity.totalPurchased}, oportunidades para participar y un acumulado de compras por ${clientOpportunity.opportunities} Tu reserva para la próxima oportunidad es de ${clientOpportunity.balanceReserve} 🙌`;
+        let mensaje = `😀 Tu factura se validó correctamente! Tienes ${clientOpportunity.opportunities}, oportunidades para participar y un acumulado de compras por ${clientOpportunity.totalPurchased} Tu reserva para la próxima oportunidad es de ${clientOpportunity.balanceReserve} 🙌`;
 
         // Enviar el mensaje utilizando el servicio de WATI
         await this.sendMessage(clientOpportunity.phone, mensaje);
