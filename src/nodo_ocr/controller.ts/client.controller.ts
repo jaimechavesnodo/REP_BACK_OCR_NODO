@@ -11,7 +11,6 @@ import { RejectionInvoiceDto } from '../dto/invoice-rejection';
 import { OpportunityAssignmentDto } from '../dto/opportunity-assignment';
 import { MessageClientDto } from '../dto/message-client';
 import { Response } from 'express'; 
-import { get } from 'http';
 
 @Controller('client')
 export class ClientController {
@@ -22,6 +21,13 @@ export class ClientController {
     return this.clientService.findAll();
   }
 
+  
+  @Get('invoice-exists/:invoiceNumber')
+  async checkInvoiceNumberExists(@Param('invoiceNumber') invoiceNumber: string): Promise<{ exists: boolean, code: number }> {
+      const exists = await this.clientService.invoiceNumberExists(invoiceNumber);
+      return { exists, code: exists ? 1 : 2 };
+  }
+  
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Client> {
     return this.clientService.findOne(+id);
@@ -58,8 +64,6 @@ export class ClientController {
 
     return { data, totalCount };
   }
-
-
 
   @Get('downloadShoppingClientsByDateRange/:startDate/:endDate/:limit')
   async downloadShoppingClientsByDateRange(

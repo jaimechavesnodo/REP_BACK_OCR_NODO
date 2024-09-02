@@ -31,6 +31,10 @@ export class ClientService {
     return this.clientShoppingRepository.findOneBy({ id });
   }
 
+  async invoiceNumberExists(invoiceNumber: string): Promise<boolean> {
+    const count = await this.clientShoppingRepository.count({ where: { invoiceNumber } });
+    return count > 0;
+}
   async remove(id: number): Promise<void> {
     await this.clientRepository.delete(id);
   }
