@@ -122,6 +122,12 @@ export class ClientController {
     return this.clientService.updateShoppingClient(+id, updateClientDto);
   }
 
+  @Get('validate/:date')
+    async validateDate(@Param('date') date: string): Promise<{ code: number }> {
+        const code = this.clientLogic.validateDate(date);
+        return { code };
+    }
+
   @Put(':id')
   update(
     @Param('id') id: number,

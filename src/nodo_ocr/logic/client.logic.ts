@@ -74,7 +74,12 @@ export class ClientLogic {
         }
     }
 
-
+    validateDate(dateString: string): number {
+        const inputDate = new Date(dateString);
+        const comparisonDate = new Date('2024-08-31');
+        // Retorna 1 si la fecha es válida (mayor que 2024-08-31), y 2 si es inválida
+        return inputDate > comparisonDate ? 1 : 2;
+    }
 
     async handleAgentShoppingClient(idAgent: number): Promise<ShoppingClient | null> {
 
