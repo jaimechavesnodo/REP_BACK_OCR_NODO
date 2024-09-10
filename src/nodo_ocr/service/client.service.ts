@@ -93,16 +93,27 @@ export class ClientService {
   }
 
   async generateExcelForShoppingClientsByDateRange(startDate: Date, endDate: Date, limit: number): Promise<Buffer> {
+    // Obtener los ShoppingClients en el rango de fechas
     const shoppingClients = await this.findShoppingClientsByDateRange(startDate, endDate, limit);
-
+  
     // Crear un nuevo libro de Excel
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('ShoppingClients');
-
-    // Definir las columnas
+  
+    // Definir las columnas, incluyendo información adicional del cliente
     worksheet.columns = [
       { header: 'ID', key: 'id', width: 10 },
       { header: 'ID Cliente', key: 'idClient', width: 10 },
+      { header: 'Teléfono Cliente', key: 'clientPhone', width: 15 },
+      { header: 'Fecha Cliente', key: 'clientDate', width: 15 },
+      { header: 'Oportunidades Cliente', key: 'clientOpportunities', width: 20 },
+      { header: 'Total Comprado Cliente', key: 'clientTotalPurchased', width: 20 },
+      { header: 'Balance Reserva Cliente', key: 'clientBalanceReserve', width: 20 },
+      { header: 'Número Documento Cliente', key: 'clientNumberDocument', width: 20 },
+      { header: 'Tipo Documento Cliente', key: 'clientTypeDocument', width: 20 },
+      { header: 'Email Cliente', key: 'clientEmail', width: 25 },
+      { header: 'Ciudad Cliente', key: 'clientCity', width: 15 },
+      { header: 'Vehículo Cliente', key: 'clientVehicle', width: 20 },
       { header: 'Precio', key: 'price', width: 15 },
       { header: 'NIT', key: 'nit', width: 15 },
       { header: 'URL Factura', key: 'invoiceUrl', width: 30 },
@@ -117,16 +128,47 @@ export class ClientService {
       { header: 'Razón Rechazo', key: 'reasonReject', width: 20 },
       { header: 'Cola', key: 'queue', width: 10 },
     ];
-
-    // Añadir filas
-    shoppingClients.forEach(client => {
-      worksheet.addRow(client);
-    });
-
+  
+    // Añadir las filas con la información de los ShoppingClients y los datos del Cliente
+    for (const clientShopping of shoppingClients) {
+      // Obtener el cliente relacionado por su ID
+      const client = await this.findOne(clientShopping.idClient);
+  
+      // Agregar una nueva fila con datos del cliente y de ShoppingClient
+      worksheet.addRow({
+        id: clientShopping.id,
+        idClient: clientShopping.idClient,
+        clientPhone: client ? client.phone : 'N/A',
+        clientDate: client ? client.date : 'N/A',
+        clientOpportunities: client ? client.opportunities : 'N/A',
+        clientTotalPurchased: client ? client.totalPurchased : 'N/A',
+        clientBalanceReserve: client ? client.balanceReserve : 'N/A',
+        clientNumberDocument: client ? client.numberDocument : 'N/A',
+        clientTypeDocument: client ? client.typeDocument : 'N/A',
+        clientEmail: client ? client.email : 'N/A',
+        clientCity: client ? client.city : 'N/A',
+        clientVehicle: client ? client.vehicle : 'N/A',
+        price: clientShopping.price,
+        nit: clientShopping.nit,
+        invoiceUrl: clientShopping.invoiceUrl,
+        typeProduct: clientShopping.typeProduct,
+        invoiceNumber: clientShopping.invoiceNumber,
+        dateInvoice: clientShopping.dateInvoice,
+        date: clientShopping.date,
+        invoiceRead: clientShopping.invoiceRead,
+        idAgent: clientShopping.idAgent,
+        statusInvoice: clientShopping.statusInvoice,
+        commerce: clientShopping.commerce,
+        reasonReject: clientShopping.reasonReject,
+        queue: clientShopping.queue,
+      });
+    }
+  
     // Generar el archivo Excel como un buffer
     const buffer: Buffer = await workbook.xlsx.writeBuffer() as Buffer;
     return buffer;
   }
+  
 
   async countShoppingClientsByInvoiceRead(): Promise<number> {
     return this.clientShoppingRepository.count({
