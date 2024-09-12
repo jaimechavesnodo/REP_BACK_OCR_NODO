@@ -129,25 +129,36 @@ export class ClientService {
       { header: 'Cola', key: 'queue', width: 10 },
     ];
   
+    // Set para almacenar los números de documento y evitar duplicados
+    const seenDocuments = new Set<string>();
+  
     // Añadir las filas con la información de los ShoppingClients y los datos del Cliente
     for (const clientShopping of shoppingClients) {
       // Obtener el cliente relacionado por su ID
       const client = await this.findOne(clientShopping.idClient);
   
+      // Si no existe cliente o el número de documento ya está en el Set, omitir esta iteración
+      if (!client || seenDocuments.has(client.numberDocument)) {
+        continue;
+      }
+  
+      // Agregar el número de documento al Set para evitar duplicados
+      seenDocuments.add(client.numberDocument);
+  
       // Agregar una nueva fila con datos del cliente y de ShoppingClient
       worksheet.addRow({
         id: clientShopping.id,
         idClient: clientShopping.idClient,
-        clientPhone: client ? client.phone : 'N/A',
-        clientDate: client ? client.date : 'N/A',
-        clientOpportunities: client ? client.opportunities : 'N/A',
-        clientTotalPurchased: client ? client.totalPurchased : 'N/A',
-        clientBalanceReserve: client ? client.balanceReserve : 'N/A',
-        clientNumberDocument: client ? client.numberDocument : 'N/A',
-        clientTypeDocument: client ? client.typeDocument : 'N/A',
-        clientEmail: client ? client.email : 'N/A',
-        clientCity: client ? client.city : 'N/A',
-        clientVehicle: client ? client.vehicle : 'N/A',
+        clientPhone: client.phone,
+        clientDate: client.date,
+        clientOpportunities: client.opportunities,
+        clientTotalPurchased: client.totalPurchased,
+        clientBalanceReserve: client.balanceReserve,
+        clientNumberDocument: client.numberDocument,
+        clientTypeDocument: client.typeDocument,
+        clientEmail: client.email,
+        clientCity: client.city,
+        clientVehicle: client.vehicle,
         price: clientShopping.price,
         nit: clientShopping.nit,
         invoiceUrl: clientShopping.invoiceUrl,
@@ -168,6 +179,7 @@ export class ClientService {
     const buffer: Buffer = await workbook.xlsx.writeBuffer() as Buffer;
     return buffer;
   }
+  
   
 
   async countShoppingClientsByInvoiceRead(): Promise<number> {
