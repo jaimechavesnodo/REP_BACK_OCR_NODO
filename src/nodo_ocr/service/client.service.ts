@@ -100,10 +100,11 @@ export class ClientService {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('ShoppingClients');
   
-    // Definir las columnas, incluyendo información adicional del cliente
+    // Definir las columnas, incluyendo la nueva columna nameClient
     worksheet.columns = [
       { header: 'ID', key: 'id', width: 10 },
       { header: 'ID Cliente', key: 'idClient', width: 10 },
+      { header: 'Nombre Cliente (ShoppingClient)', key: 'nameClient', width: 20 }, // Nueva columna
       { header: 'Teléfono Cliente', key: 'clientPhone', width: 15 },
       { header: 'Fecha Cliente', key: 'clientDate', width: 15 },
       { header: 'Oportunidades Cliente', key: 'clientOpportunities', width: 20 },
@@ -145,10 +146,11 @@ export class ClientService {
       // Agregar el número de documento al Set para evitar duplicados
       seenDocuments.add(client.numberDocument);
   
-      // Agregar una nueva fila con datos del cliente y de ShoppingClient
+      // Agregar una nueva fila con datos del cliente, ShoppingClient y el campo nameClient
       worksheet.addRow({
         id: clientShopping.id,
         idClient: clientShopping.idClient,
+        nameClient: clientShopping.nameClient, // Agregar el campo nameClient aquí
         clientPhone: client.phone,
         clientDate: client.date,
         clientOpportunities: client.opportunities,
@@ -179,6 +181,8 @@ export class ClientService {
     const buffer: Buffer = await workbook.xlsx.writeBuffer() as Buffer;
     return buffer;
   }
+  
+  
   
   
 

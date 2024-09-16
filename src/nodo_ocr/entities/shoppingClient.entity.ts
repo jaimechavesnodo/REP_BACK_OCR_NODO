@@ -46,6 +46,9 @@ export class ShoppingClient {
 
   @Column()
   queue: number;
+
+  @Column()
+  nameClient: string;
 }
 
 
