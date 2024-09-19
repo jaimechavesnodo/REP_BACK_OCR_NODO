@@ -28,4 +28,7 @@ export class CreateShoppingClientDto {
 
   @IsString()
   commerce: string;
+  
+  @IsString()
+  nameClient: string;
 }

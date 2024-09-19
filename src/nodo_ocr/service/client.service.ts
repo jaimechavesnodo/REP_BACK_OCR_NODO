@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, LessThanOrEqual, MoreThan, Not, QueryBuilder, Repository } from 'typeorm';
+import { InjectRepository} from '@nestjs/typeorm';
+import { Repository, In} from 'typeorm';
 import { Client } from '../entities/client.entity';
 import { ShoppingClient } from '../entities/shoppingClient.entity';
 import { CreateClientDto } from '../dto/create-client';
@@ -92,36 +92,71 @@ export class ClientService {
       .getMany();
   }
 
-  async generateExcelForShoppingClientsByDateRange(startDate: Date, endDate: Date, limit: number): Promise<Buffer> {
-    // Obtener los ShoppingClients en el rango de fechas
-    const shoppingClients = await this.findShoppingClientsByDateRange(startDate, endDate, limit);
+  async findShoppingClientsByDateRangeGroupedByClient(
+    startDate: Date, 
+    endDate: Date, 
+    limit: number
+  ): Promise<any[]> {
+    return this.clientShoppingRepository.createQueryBuilder('shoppingClient')
+      .select('shoppingClient.idClient', 'idClient') // Seleccionar idClient
+      .addSelect('MAX(shoppingClient.date)', 'latestDate') // Seleccionar la fecha más reciente
+      .where('shoppingClient.date >= :startDate', { startDate }) // Condición para la fecha de inicio
+      .andWhere('shoppingClient.date <= :endDate', { endDate }) // Condición para la fecha de fin
+      .groupBy('shoppingClient.idClient') // Agrupar por idClient
+      .orderBy('latestDate', 'DESC') // Ordenar por la fecha más reciente
+      .limit(limit) // Limitar la cantidad de registros
+      .getRawMany(); // Obtener resultados crudos
+  }
+
+  
+  
+  async generateExcelForShoppingClientsByDateRange(
+    startDate: Date,
+    endDate: Date,
+    limit: number
+  ): Promise<Buffer> {
+    // Ejecutar la consulta SQL personalizada
+    const shoppingClients = await this.clientShoppingRepository.query(`
+      WITH LatestPurchases AS (
+        SELECT idClient
+        FROM shoppingClient
+        WHERE date >= @0 AND date <= @1
+        GROUP BY idClient
+      )
+      SELECT TOP (@2) sh.*, cl.*
+      FROM shoppingClient AS sh
+      LEFT JOIN client AS cl ON cl.id = sh.idClient
+      WHERE sh.idClient IN (SELECT idClient FROM LatestPurchases)
+        AND cl.opportunities > 0
+        AND sh.nameClient IS NOT NULL
+      ORDER BY NEWID();
+    `, [startDate, endDate, limit]);
   
     // Crear un nuevo libro de Excel
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('ShoppingClients');
   
-    // Definir las columnas, incluyendo la nueva columna nameClient
+    // Definir las columnas
     worksheet.columns = [
       { header: 'ID', key: 'id', width: 10 },
       { header: 'ID Cliente', key: 'idClient', width: 10 },
-      { header: 'Nombre Cliente (ShoppingClient)', key: 'nameClient', width: 20 }, // Nueva columna
-      { header: 'Teléfono Cliente', key: 'clientPhone', width: 15 },
-      { header: 'Fecha Cliente', key: 'clientDate', width: 15 },
-      { header: 'Oportunidades Cliente', key: 'clientOpportunities', width: 20 },
-      { header: 'Total Comprado Cliente', key: 'clientTotalPurchased', width: 20 },
-      { header: 'Balance Reserva Cliente', key: 'clientBalanceReserve', width: 20 },
-      { header: 'Número Documento Cliente', key: 'clientNumberDocument', width: 20 },
-      { header: 'Tipo Documento Cliente', key: 'clientTypeDocument', width: 20 },
-      { header: 'Email Cliente', key: 'clientEmail', width: 25 },
-      { header: 'Ciudad Cliente', key: 'clientCity', width: 15 },
-      { header: 'Vehículo Cliente', key: 'clientVehicle', width: 20 },
+      { header: 'Nombre Cliente', key: 'name', width: 20 },
+      { header: 'Teléfono Cliente', key: 'phone', width: 15 },
+      { header: 'Fecha Cliente', key: 'date', width: 15 },
+      { header: 'Oportunidades Cliente', key: 'opportunities', width: 20 },
+      { header: 'Total Comprado Cliente', key: 'totalPurchased', width: 20 },
+      { header: 'Balance Reserva Cliente', key: 'balanceReserve', width: 20 },
+      { header: 'Número Documento Cliente', key: 'numberDocument', width: 20 },
+      { header: 'Tipo Documento Cliente', key: 'typeDocument', width: 20 },
+      { header: 'Email Cliente', key: 'email', width: 25 },
+      { header: 'Ciudad Cliente', key: 'city', width: 15 },
+      { header: 'Vehículo Cliente', key: 'vehicle', width: 20 },
       { header: 'Precio', key: 'price', width: 15 },
       { header: 'NIT', key: 'nit', width: 15 },
       { header: 'URL Factura', key: 'invoiceUrl', width: 30 },
       { header: 'Tipo Producto', key: 'typeProduct', width: 20 },
       { header: 'Número Factura', key: 'invoiceNumber', width: 20 },
       { header: 'Fecha Factura', key: 'dateInvoice', width: 20 },
-      { header: 'Fecha', key: 'date', width: 20 },
       { header: 'Factura Leída', key: 'invoiceRead', width: 15 },
       { header: 'ID Agente', key: 'idAgent', width: 10 },
       { header: 'Estado Factura', key: 'statusInvoice', width: 15 },
@@ -130,62 +165,61 @@ export class ClientService {
       { header: 'Cola', key: 'queue', width: 10 },
     ];
   
-    // Set para almacenar los números de documento y evitar duplicados
-    const seenDocuments = new Set<string>();
-  
-    // Añadir las filas con la información de los ShoppingClients y los datos del Cliente
-    for (const clientShopping of shoppingClients) {
-      // Obtener el cliente relacionado por su ID
-      const client = await this.findOne(clientShopping.idClient);
-  
-      // Si no existe cliente o el número de documento ya está en el Set, omitir esta iteración
-      if (!client || seenDocuments.has(client.numberDocument)) {
-        continue;
-      }
-  
-      // Agregar el número de documento al Set para evitar duplicados
-      seenDocuments.add(client.numberDocument);
-  
-      // Agregar una nueva fila con datos del cliente, ShoppingClient y el campo nameClient
+    // Añadir filas con los datos obtenidos
+    shoppingClients.forEach((row: any) => {
       worksheet.addRow({
-        id: clientShopping.id,
-        idClient: clientShopping.idClient,
-        nameClient: clientShopping.nameClient, // Agregar el campo nameClient aquí
-        clientPhone: client.phone,
-        clientDate: client.date,
-        clientOpportunities: client.opportunities,
-        clientTotalPurchased: client.totalPurchased,
-        clientBalanceReserve: client.balanceReserve,
-        clientNumberDocument: client.numberDocument,
-        clientTypeDocument: client.typeDocument,
-        clientEmail: client.email,
-        clientCity: client.city,
-        clientVehicle: client.vehicle,
-        price: clientShopping.price,
-        nit: clientShopping.nit,
-        invoiceUrl: clientShopping.invoiceUrl,
-        typeProduct: clientShopping.typeProduct,
-        invoiceNumber: clientShopping.invoiceNumber,
-        dateInvoice: clientShopping.dateInvoice,
-        date: clientShopping.date,
-        invoiceRead: clientShopping.invoiceRead,
-        idAgent: clientShopping.idAgent,
-        statusInvoice: clientShopping.statusInvoice,
-        commerce: clientShopping.commerce,
-        reasonReject: clientShopping.reasonReject,
-        queue: clientShopping.queue,
+        id: row.id,
+        idClient: row.idClient,
+        name: row.name,
+        phone: row.phone,
+        date: row.date,
+        opportunities: row.opportunities,
+        totalPurchased: row.totalPurchased,
+        balanceReserve: row.balanceReserve,
+        numberDocument: row.numberDocument,
+        typeDocument: row.typeDocument,
+        email: row.email,
+        city: row.city,
+        vehicle: row.vehicle,
+        price: row.price,
+        nit: row.nit,
+        invoiceUrl: row.invoiceUrl,
+        typeProduct: row.typeProduct,
+        invoiceNumber: row.invoiceNumber,
+        dateInvoice: row.dateInvoice,
+        invoiceRead: row.invoiceRead,
+        idAgent: row.idAgent,
+        statusInvoice: row.statusInvoice,
+        commerce: row.commerce,
+        reasonReject: row.reasonReject,
+        queue: row.queue,
       });
-    }
+    });
   
     // Generar el archivo Excel como un buffer
-    const buffer: Buffer = await workbook.xlsx.writeBuffer() as Buffer;
+    const arrayBuffer = await workbook.xlsx.writeBuffer(); // Esto retorna un ArrayBuffer
+    const buffer = Buffer.from(arrayBuffer); // Convertir ArrayBuffer a Node.js Buffer
     return buffer;
   }
   
   
-  
-  
+  // Método para seleccionar un subconjunto aleatorio de un array
+  private getRandomSubset<T>(array: T[], size: number): T[] {
+    const shuffled = array.slice(0);
+    let i = array.length;
+    let temp: T;
+    let index: number;
 
+    while (i--) {
+      index = Math.floor(Math.random() * (i + 1));
+      temp = shuffled[i];
+      shuffled[i] = shuffled[index];
+      shuffled[index] = temp;
+    }
+
+    return shuffled.slice(0, size);
+  }
+ 
   async countShoppingClientsByInvoiceRead(): Promise<number> {
     return this.clientShoppingRepository.count({
       where: { invoiceRead: 2 }

@@ -70,20 +70,29 @@ export class ClientController {
     @Param('startDate') startDate: string,
     @Param('endDate') endDate: string,
     @Param('limit') limit: number,
-    @Res() res: Response  // Usa el Response de express
+    @Res() res: Response
   ): Promise<void> {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    try {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
   
-    const buffer = await this.clientService.generateExcelForShoppingClientsByDateRange(start, end, +limit);
+      if (isNaN(start.getTime()) || isNaN(end.getTime()) || limit <= 0) {
+        res.status(400).send('Invalid parameters');
+        return;
+      }
   
-    // Establecer encabezados para la descarga
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=shopping_clients_${startDate}_to_${endDate}.xlsx`);
+      const buffer = await this.clientService.generateExcelForShoppingClientsByDateRange(start, end, +limit);
   
-    // Enviar el archivo Excel
-    res.send(buffer);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=shopping_clients_${startDate}_to_${endDate}.xlsx`);
+  
+      res.send(buffer);
+    } catch (error) {
+      console.error('Error generating Excel file:', error);
+      res.status(500).send('Internal Server Error');
+    }
   }
+  
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
     return this.clientService.remove(+id);
