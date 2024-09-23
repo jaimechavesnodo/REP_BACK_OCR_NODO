@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository} from '@nestjs/typeorm';
-import { Repository, In} from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, In } from 'typeorm';
 import { Client } from '../entities/client.entity';
 import { ShoppingClient } from '../entities/shoppingClient.entity';
 import { CreateClientDto } from '../dto/create-client';
@@ -34,7 +34,7 @@ export class ClientService {
   async invoiceNumberExists(invoiceNumber: string): Promise<boolean> {
     const count = await this.clientShoppingRepository.count({ where: { invoiceNumber } });
     return count > 0;
-}
+  }
   async remove(id: number): Promise<void> {
     await this.clientRepository.delete(id);
   }
@@ -93,8 +93,8 @@ export class ClientService {
   }
 
   async findShoppingClientsByDateRangeGroupedByClient(
-    startDate: Date, 
-    endDate: Date, 
+    startDate: Date,
+    endDate: Date,
     limit: number
   ): Promise<any[]> {
     return this.clientShoppingRepository.createQueryBuilder('shoppingClient')
@@ -108,8 +108,8 @@ export class ClientService {
       .getRawMany(); // Obtener resultados crudos
   }
 
-  
-  
+
+
   async generateExcelForShoppingClientsByDateRange(
     startDate: Date,
     endDate: Date,
@@ -117,25 +117,58 @@ export class ClientService {
   ): Promise<Buffer> {
     // Ejecutar la consulta SQL personalizada
     const shoppingClients = await this.clientShoppingRepository.query(`
-      WITH LatestPurchases AS (
-        SELECT idClient
-        FROM shoppingClient
-        WHERE date >= @0 AND date <= @1
-        GROUP BY idClient
-      )
-      SELECT TOP (@2) sh.*, cl.*
-      FROM shoppingClient AS sh
-      LEFT JOIN client AS cl ON cl.id = sh.idClient
-      WHERE sh.idClient IN (SELECT idClient FROM LatestPurchases)
-        AND cl.opportunities > 0
-        AND sh.nameClient IS NOT NULL
-      ORDER BY NEWID();
+    WITH LatestPurchases AS (
+    SELECT idClient
+    FROM shoppingClient
+    WHERE date >= @0 AND date <= @1
+    GROUP BY idClient
+    ),
+    RankedClients AS (
+        SELECT
+            sh.idClient AS shoppingClientId, 
+            sh.price,
+            sh.nit,
+            sh.typeProduct,
+            sh.invoiceNumber,
+            sh.dateInvoice,
+            sh.date,
+            sh.idAgent,
+            sh.invoiceRead,
+            sh.statusInvoice,
+            sh.commerce,
+            sh.reasonReject,
+            sh.invoiceUrl,
+            sh.queue,
+            sh.nameClient,
+            cl.id AS clientId,  
+            cl.phone,
+            cl.date AS fecha,
+            cl.opportunities,
+            cl.totalPurchased,
+            cl.balanceReserve,
+            cl.numberDocument,
+            cl.typeDocument,
+            cl.email,
+            cl.city,
+            cl.vehicle,
+            ROW_NUMBER() OVER (PARTITION BY sh.idClient ORDER BY NEWID()) AS rn
+        FROM shoppingClient AS sh
+        LEFT JOIN client AS cl ON cl.id = sh.idClient
+        WHERE sh.idClient IN (SELECT idClient FROM LatestPurchases)
+          AND cl.opportunities > 0
+          AND sh.nameClient IS NOT NULL
+          )
+          SELECT TOP (@2) *
+          FROM RankedClients
+          WHERE rn = 1
+          ORDER BY NEWID();
+
     `, [startDate, endDate, limit]);
-  
+
     // Crear un nuevo libro de Excel
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('ShoppingClients');
-  
+
     // Definir las columnas
     worksheet.columns = [
       { header: 'ID', key: 'id', width: 10 },
@@ -164,7 +197,7 @@ export class ClientService {
       { header: 'Razón Rechazo', key: 'reasonReject', width: 20 },
       { header: 'Cola', key: 'queue', width: 10 },
     ];
-  
+
     // Añadir filas con los datos obtenidos
     shoppingClients.forEach((row: any) => {
       worksheet.addRow({
@@ -195,14 +228,14 @@ export class ClientService {
         queue: row.queue,
       });
     });
-  
+
     // Generar el archivo Excel como un buffer
     const arrayBuffer = await workbook.xlsx.writeBuffer(); // Esto retorna un ArrayBuffer
     const buffer = Buffer.from(arrayBuffer); // Convertir ArrayBuffer a Node.js Buffer
     return buffer;
   }
-  
-  
+
+
   // Método para seleccionar un subconjunto aleatorio de un array
   private getRandomSubset<T>(array: T[], size: number): T[] {
     const shuffled = array.slice(0);
@@ -219,7 +252,7 @@ export class ClientService {
 
     return shuffled.slice(0, size);
   }
- 
+
   async countShoppingClientsByInvoiceRead(): Promise<number> {
     return this.clientShoppingRepository.count({
       where: { invoiceRead: 2 }
