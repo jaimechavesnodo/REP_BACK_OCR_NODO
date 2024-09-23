@@ -115,7 +115,6 @@ export class ClientService {
     endDate: Date,
     limit: number
   ): Promise<Buffer> {
-    // Ejecutar la consulta SQL personalizada
     const shoppingClients = await this.clientShoppingRepository.query(`
     WITH LatestPurchases AS (
     SELECT idClient
@@ -201,9 +200,9 @@ export class ClientService {
     // Añadir filas con los datos obtenidos
     shoppingClients.forEach((row: any) => {
       worksheet.addRow({
-        id: row.id,
-        idClient: row.idClient,
-        name: row.name,
+        id: row.shoppingClientId,
+        idClient: row.clientId,
+        name: row.nameClient,
         phone: row.phone,
         date: row.date,
         opportunities: row.opportunities,
