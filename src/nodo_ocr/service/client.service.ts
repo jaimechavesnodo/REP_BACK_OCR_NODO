@@ -138,7 +138,7 @@ export class ClientService {
             sh.reasonReject,
             sh.invoiceUrl,
             sh.queue,
-            sh.nameClient,
+            cl.nameClient,
             cl.id AS clientId,  
             cl.phone,
             cl.date AS fecha,
